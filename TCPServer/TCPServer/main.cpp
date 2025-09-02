@@ -55,6 +55,28 @@ void main()
 
 
     //wait for a connection
+    sockaddr_in client;
+    int clientSize = sizeof(client);
+
+    SOCKET clientSocket = accept(listening, (sockaddr*)&client, &clientSize);
+
+    if (clientSocket == INVALID_SOCKET) {
+        std::cerr << "accept failed: " << WSAGetLastError() << std::endl;
+        closesocket(listening);
+        WSACleanup();
+        return;
+    }
+
+    //remote name of client
+    char host[NI_MAXHOST];
+
+    //service client is connected on
+    char service[NI_MAXHOST];
+
+    ZeroMemory(host, NI_MAXHOST); //windows version of memset(host, 0, NI_MAXHOST);
+    ZeroMemory(service, NI_MAXHOST);
+
+
 
 	//close listening socket
 
