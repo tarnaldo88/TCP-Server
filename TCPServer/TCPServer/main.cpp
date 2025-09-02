@@ -3,7 +3,7 @@
 #include <winsock2.h>
 #include <ostream>
 
-#pragma comment (lib, "ws3_32.lib")
+#pragma comment (lib, "ws2_32.lib")
 
 void main()
 {
@@ -87,12 +87,38 @@ void main()
     }
 
 	//close listening socket
+    closesocket(listening);
 
 	//while Loop: accept and echo message back to client
+    char buf[4096];
 
+    while (true)
+    {
+        ZeroMemory(buf, 4096);
+
+        //wait for client to send data
+        int bytesRecieved = recv(clientSocket, buf, 4096, 0);
+
+        if (bytesRecieved == SOCKET_ERROR)
+        {
+            std::cerr << "Error in recieving. exiting \n";
+            break;
+        }
+
+        if (bytesRecieved == 0)
+        {
+            std::cout << "client disconnected\n";
+            break;
+        }
+
+        //echo message
+        send(clientSocket, buf, bytesRecieved + 1, 0);
+    }
 
 
 	//close socket
+    closesocket(clientSocket);
+    //shutdown/cleanup winsock
     WSACleanup();
-	//shutdown winsock
+	
 }
