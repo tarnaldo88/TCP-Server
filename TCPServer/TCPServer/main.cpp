@@ -7,7 +7,7 @@
 
 void main()
 {
-	//init Winsock
+    //init Winsock
     WSADATA wsaData;
     int result;
 
@@ -20,7 +20,7 @@ void main()
 
     //create socket
     SOCKET listening = socket(AF_INET, SOCK_STREAM, 0);
-    
+
     if (listening = INVALID_SOCKET)
     {
         std::cerr << " failed to create socket, exiting...\n";
@@ -76,7 +76,15 @@ void main()
     ZeroMemory(host, NI_MAXHOST); //windows version of memset(host, 0, NI_MAXHOST);
     ZeroMemory(service, NI_MAXHOST);
 
-
+    if (getnameinfo((sockaddr*) & client, sizeof(client), host, NI_MAXHOST, service, NI_MAXSERV, 0) == 0)
+    {
+        std::cout << "Connected on Port: " << service << "\n";
+    }
+    else
+    {
+        inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
+        std::cout << "Host connected on Port: " << ntohs(client.sin_port) << "\n";
+    }
 
 	//close listening socket
 
