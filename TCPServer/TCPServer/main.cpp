@@ -1,6 +1,7 @@
 #include <iostream>
 #include <WS2tcpip.h>
 #include <winsock2.h>
+#include <ostream>
 
 #pragma comment (lib, "ws3_32.lib")
 
@@ -14,12 +15,50 @@ void main()
     result = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (result != 0) {
         std::cerr << "WSAStartup failed with error: " << result << std::endl;
-        return 1;
+        return;
     }
 
-	//create socket
+    //create socket
+    SOCKET listening = socket(AF_INET, SOCK_STREAM, 0);
+    
+    if (listening = INVALID_SOCKET)
+    {
+        std::cerr << " failed to create socket, exiting...\n";
+        WSACleanup();
+        return;
+    }
 
-	//bind the socket to an ip address and port
+    //bind the socket to a port & ip address 
+    sockaddr_in hint;
+    hint.sin_family = AF_INET;
+    hint.sin_port = htons(54000);
+    hint.sin_addr.S_un.S_addr = INADDR_ANY;
+    //INET_PTON could also be used
+
+    result = bind(listening, (sockaddr*)&hint, sizeof(hint));
+
+    if (result == SOCKET_ERROR) {
+        std::cerr << "bind failed: " << WSAGetLastError() << std::endl;
+        closesocket(listening);
+        WSACleanup();
+        return;
+    }
+
+    //tell winsocket the socket is for listening
+    result = listen(listening, SOMAXCONN);
+    if (result == SOCKET_ERROR) {
+        std::cerr << "listen failed: " << WSAGetLastError() << std::endl;
+        closesocket(listening);
+        WSACleanup();
+        return;
+    }
+
+
+    //wait for a connection
+
+	//close listening socket
+
+	//while Loop: accept and echo message back to client
 
 
 
